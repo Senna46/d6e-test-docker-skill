@@ -125,7 +125,10 @@ def main():
         elif operation == "sql_update":
             # Test SQL UPDATE
             table_name = user_input.get("table_name", "test_table")
-            set_data = user_input.get("set", {})
+            # Support both "data" and "set" fields
+            set_data = user_input.get("data", user_input.get("set", {}))
+            # Support both "id" and "where" fields
+            record_id = user_input.get("id")
             where = user_input.get("where", "")
             
             # Build SET clause with escaped values
@@ -136,7 +139,11 @@ def main():
             set_clause = ", ".join(set_parts)
             
             update_sql = f"UPDATE {table_name} SET {set_clause}"
-            if where:
+            if record_id:
+                # Use id field if provided
+                update_sql += f" WHERE id = '{record_id}'"
+            elif where:
+                # Fall back to where field
                 update_sql += f" WHERE {where}"
             
             result = execute_sql(
@@ -149,7 +156,7 @@ def main():
                     "status": "success",
                     "operation": "sql_update",
                     "table": table_name,
-                    "affected_rows": result.get("affected_rows", 0)
+                    "updated_rows": result.get("affected_rows", 0)
                 }
             }
         
