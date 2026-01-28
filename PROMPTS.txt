@@ -1,0 +1,160 @@
+# AIエージェント用プロンプト集（コピペ用）
+
+===============================================
+基本プロンプト - 動作確認
+===============================================
+
+D6EでDockerベースのデータ処理スキルを使用してください。
+
+Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+README: https://github.com/Senna46/d6e-test-docker-skill
+
+使用手順:
+1. d6e_create_stf でSTFを作成
+2. d6e_create_stf_version で以下を指定:
+   - runtime: "docker"
+   - code: "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
+3. d6e_create_workflow でワークフローを作成
+4. d6e_execute_workflow で実行
+
+まずは operation: "test" で動作確認してください。
+
+
+===============================================
+プロンプト1 - データ取得
+===============================================
+
+test_dataテーブルのデータを取得して表示してください。
+
+使用スキル:
+- Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+- 操作: sql_select
+- テーブル: test_data
+
+手順:
+1. STFとワークフローを作成（runtime: "docker"）
+2. ポリシーが設定されていることを確認（なければ作成）
+3. operation: "sql_select", table_name: "test_data" で実行
+
+注意: テーブルとポリシーが存在しない場合は、まず作成してください。
+
+
+===============================================
+プロンプト2 - データ挿入
+===============================================
+
+test_dataテーブルに新しいデータを追加してください。
+
+データ:
+- name: "New Record"
+- value: 999
+
+使用スキル:
+- Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+- 操作: sql_insert
+
+手順:
+1. STFとワークフローを作成
+2. INSERTポリシーが設定されていることを確認
+3. operation: "sql_insert", table_name: "test_data", data: {...} で実行
+
+
+===============================================
+プロンプト3 - 完全なワークフロー
+===============================================
+
+test_dataテーブルを作成し、Docker STFを使ってデータを取得・追加してください。
+
+Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+
+実行ステップ:
+1. テーブル作成:
+   CREATE TABLE test_data (
+     id UUID PRIMARY KEY DEFAULT uuidv7(),
+     name TEXT NOT NULL,
+     value INTEGER,
+     created_at TIMESTAMPTZ DEFAULT NOW()
+   )
+
+2. テストデータ挿入:
+   INSERT INTO test_data (name, value) VALUES ('Test 1', 100), ('Test 2', 200)
+
+3. STF作成（name: "test-docker-skill", runtime: "docker"）
+
+4. ポリシー設定:
+   - ポリシーグループ作成
+   - STFをグループに追加
+   - SELECT/INSERTポリシー作成（table: test_data）
+
+5. ワークフロー作成
+
+6. データ取得テスト:
+   - operation: "sql_select"
+   - table_name: "test_data"
+
+7. データ追加テスト:
+   - operation: "sql_insert"
+   - table_name: "test_data"
+   - data: {"name": "AI Added", "value": 888}
+
+8. 結果を確認して表示
+
+結果を表形式で表示してください。
+
+
+===============================================
+プロンプト4 - エラーハンドリング含む
+===============================================
+
+Docker STFを使ってtest_dataテーブルのデータを取得してください。
+テーブルやポリシーが存在しない場合は、適切に作成してください。
+
+Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+
+実行手順:
+1. まず operation: "test" で動作確認
+2. test_dataテーブルの存在確認（なければ作成）
+3. ポリシー設定の確認（なければ作成）
+4. operation: "sql_select" でデータ取得
+5. 結果を表示
+
+エラーが発生した場合:
+- "does not exist" → テーブルを作成
+- "Policy denied" → ポリシーを設定
+- その他のエラー → エラー内容を報告
+
+各ステップの結果を明示的に表示してください。
+
+
+===============================================
+最小限プロンプト（経験者向け）
+===============================================
+
+Docker STF (ghcr.io/senna46/d6e-test-docker-skill:latest) を使用してtest_dataテーブルからデータを取得してください。
+
+
+===============================================
+トラブルシューティング用プロンプト
+===============================================
+
+Docker STFの動作をテストしてください。
+
+Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+
+テスト項目:
+1. 基本動作テスト（operation: "test"）
+2. エラーハンドリング（operation: "error"）
+3. 不明な操作（operation: "unknown"）
+
+各テストの結果と、stdoutとstderrの出力を確認してください。
+
+
+===============================================
+使用上の注意
+===============================================
+
+1. runtime は必ず "docker" を指定
+2. code フィールドは JSON文字列: "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
+3. SQL操作の前にテーブルとポリシーを確認
+4. エラーメッセージを読んで適切に対処
+5. まずは operation: "test" で動作確認を推奨

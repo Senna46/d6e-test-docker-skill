@@ -1,83 +1,83 @@
 # D6E Test Docker Skill
 
-テスト用のDocker STFイメージです。D6E Docker Runtimeの機能検証に使用します。
+テスト用の Docker STF イメージです。D6E Docker Runtime の機能検証に使用します。
 
 **Docker Image**: `ghcr.io/senna46/d6e-test-docker-skill:latest`
 
-## LLM/AIエージェント向け使用方法
+## LLM/AI エージェント向け使用方法
 
-このDockerイメージをD6E AIエージェントから使用する場合、以下の手順でSTFを作成してください。
+この Docker イメージを D6E AI エージェントから使用する場合、以下の手順で STF を作成してください。
 
-### ステップ1: STFの作成
+### ステップ 1: STF の作成
 
 ```javascript
 d6e_create_stf({
-  "name": "test-docker-skill",
-  "description": "Docker-based test skill for data operations"
-})
+  name: "test-docker-skill",
+  description: "Docker-based test skill for data operations",
+});
 ```
 
-### ステップ2: STFバージョンの作成
+### ステップ 2: STF バージョンの作成
 
 ```javascript
 d6e_create_stf_version({
-  "stf_id": "{ステップ1で取得したstf_id}",
-  "version": "1.0.0",
-  "runtime": "docker",
-  "code": "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
-})
+  stf_id: "{ステップ1で取得したstf_id}",
+  version: "1.0.0",
+  runtime: "docker",
+  code: '{"image":"ghcr.io/senna46/d6e-test-docker-skill:latest"}',
+});
 ```
 
-**重要**: `runtime`は必ず`"docker"`を指定し、`code`フィールドにはJSON文字列として`{"image":"ghcr.io/senna46/d6e-test-docker-skill:latest"}`を設定してください。
+**重要**: `runtime`は必ず`"docker"`を指定し、`code`フィールドには JSON 文字列として`{"image":"ghcr.io/senna46/d6e-test-docker-skill:latest"}`を設定してください。
 
-### ステップ3: ワークフローの作成
+### ステップ 3: ワークフローの作成
 
 ```javascript
 d6e_create_workflow({
-  "name": "test-docker-workflow",
-  "input_steps": [],
-  "stf_steps": [
+  name: "test-docker-workflow",
+  input_steps: [],
+  stf_steps: [
     {
-      "stf_id": "{stf_id}",
-      "version": "1.0.0"
-    }
+      stf_id: "{stf_id}",
+      version: "1.0.0",
+    },
   ],
-  "effect_steps": []
-})
+  effect_steps: [],
+});
 ```
 
-### ステップ4: ワークフローの実行
+### ステップ 4: ワークフローの実行
 
 ```javascript
 // 基本テスト
 d6e_execute_workflow({
-  "workflow_id": "{ステップ3で取得したworkflow_id}",
-  "input": {
-    "operation": "test"
-  }
-})
+  workflow_id: "{ステップ3で取得したworkflow_id}",
+  input: {
+    operation: "test",
+  },
+});
 
 // SQL SELECT実行（テーブルが存在する場合）
 d6e_execute_workflow({
-  "workflow_id": "{workflow_id}",
-  "input": {
-    "operation": "sql_select",
-    "table_name": "test_data"
-  }
-})
+  workflow_id: "{workflow_id}",
+  input: {
+    operation: "sql_select",
+    table_name: "test_data",
+  },
+});
 
 // SQL INSERT実行（ポリシーが設定されている場合）
 d6e_execute_workflow({
-  "workflow_id": "{workflow_id}",
-  "input": {
-    "operation": "sql_insert",
-    "table_name": "test_data",
-    "data": {
-      "name": "New Record",
-      "value": 100
-    }
-  }
-})
+  workflow_id: "{workflow_id}",
+  input: {
+    operation: "sql_insert",
+    table_name: "test_data",
+    data: {
+      name: "New Record",
+      value: 100,
+    },
+  },
+});
 ```
 
 ## イメージのビルド（開発者向け）
@@ -100,6 +100,7 @@ docker build -t d6e-test-skill:latest .
 ```
 
 **出力**:
+
 ```json
 {
   "output": {
@@ -112,7 +113,7 @@ docker build -t d6e-test-skill:latest .
 }
 ```
 
-### SQL SELECTテスト
+### SQL SELECT テスト
 
 ```json
 {
@@ -125,6 +126,7 @@ docker build -t d6e-test-skill:latest .
 ```
 
 **出力**:
+
 ```json
 {
   "output": {
@@ -137,7 +139,7 @@ docker build -t d6e-test-skill:latest .
 }
 ```
 
-### SQL INSERTテスト
+### SQL INSERT テスト
 
 ```json
 {
@@ -154,6 +156,7 @@ docker build -t d6e-test-skill:latest .
 ```
 
 **出力**:
+
 ```json
 {
   "output": {
@@ -165,7 +168,7 @@ docker build -t d6e-test-skill:latest .
 }
 ```
 
-### SQL UPDATEテスト
+### SQL UPDATE テスト
 
 ```json
 {
@@ -182,6 +185,7 @@ docker build -t d6e-test-skill:latest .
 ```
 
 **出力**:
+
 ```json
 {
   "output": {
@@ -205,6 +209,7 @@ docker build -t d6e-test-skill:latest .
 ```
 
 **出力**:
+
 ```json
 {
   "output": {
@@ -229,35 +234,89 @@ docker login ghcr.io -u Senna46
 
 公開後のイメージ: `ghcr.io/senna46/d6e-test-docker-skill:latest`
 
-## 📚 AIエージェント向けドキュメント
+## 🤖 AI エージェントへのプロンプト
 
-LLMにこのスキルを使わせる場合、以下のプロンプトを提供してください：
+### 基本プロンプト
 
 ```
 D6EでDockerベースのデータ処理スキルを使用してください。
 
 Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+README: https://github.com/Senna46/d6e-test-docker-skill
 
-このスキルの使用方法:
+使用手順:
 1. d6e_create_stf でSTFを作成
-2. d6e_create_stf_version で runtime: "docker", code: "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}" を指定
+2. d6e_create_stf_version で以下を指定:
+   - runtime: "docker"
+   - code: "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
 3. d6e_create_workflow でワークフローを作成
 4. d6e_execute_workflow で実行
 
 サポートされている操作:
-- operation: "test" - 基本テスト
-- operation: "sql_select" - データ取得（table_name指定）
-- operation: "sql_insert" - データ挿入（table_name, data指定）
-- operation: "sql_update" - データ更新（table_name, set, where指定）
+- "test": 基本動作確認
+- "sql_select": データ取得（table_name必須）
+- "sql_insert": データ挿入（table_name, data必須）
+- "sql_update": データ更新（table_name, set必須、whereオプション）
 
-詳細は README.md の「LLM/AIエージェント向け使用方法」セクションを参照。
+まずは operation: "test" で動作確認してください。
 ```
 
-より詳細なプロンプト例は [LLM-PROMPT.md](./LLM-PROMPT.md) を参照してください。
+### SQL を使う場合のプロンプト
 
-## D6Eでの使用
+```
+test_dataテーブルのデータを取得して表示してください。
 
-### 1. STFの作成
+使用スキル:
+- Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+- 操作: sql_select
+- テーブル: test_data
+
+手順:
+1. STFとワークフローを作成（runtime: "docker"）
+2. ポリシーが設定されていることを確認（なければ作成）
+3. operation: "sql_select", table_name: "test_data" で実行
+
+注意: テーブルとポリシーが存在しない場合は、まず作成してください。
+```
+
+### 完全な実行例プロンプト
+
+```
+test_dataテーブルを作成し、Docker STFを使ってデータを取得してください。
+
+Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
+
+実行ステップ:
+1. テーブル作成:
+   CREATE TABLE test_data (
+     id UUID PRIMARY KEY DEFAULT uuidv7(),
+     name TEXT NOT NULL,
+     value INTEGER,
+     created_at TIMESTAMPTZ DEFAULT NOW()
+   )
+
+2. テストデータ挿入:
+   INSERT INTO test_data (name, value) VALUES ('Test 1', 100), ('Test 2', 200)
+
+3. STF作成（name: "test-docker-skill", runtime: "docker"）
+
+4. ポリシー設定:
+   - ポリシーグループ作成
+   - STFをグループに追加
+   - SELECTポリシー作成（table: test_data）
+
+5. ワークフロー作成・実行:
+   - operation: "sql_select"
+   - table_name: "test_data"
+
+結果を表形式で表示してください。
+```
+
+より詳細なプロンプト例とエラー対処方法は [LLM-PROMPT.md](./LLM-PROMPT.md) を参照してください。
+
+## D6E での使用
+
+### 1. STF の作成
 
 ```bash
 # d6e_create_stf MCPツールを使用
@@ -267,7 +326,7 @@ Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
 }
 ```
 
-### 2. STFバージョンの作成
+### 2. STF バージョンの作成
 
 ```bash
 # d6e_create_stf_version MCPツールを使用
@@ -279,7 +338,7 @@ Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
 }
 ```
 
-**注意**: `code`フィールドはJSONをbase64エンコードした文字列として渡す必要がある場合があります。
+**注意**: `code`フィールドは JSON を base64 エンコードした文字列として渡す必要がある場合があります。
 
 ### 3. ワークフローの作成と実行
 
@@ -307,16 +366,16 @@ Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
 ## テスト項目
 
 - [x] 入力データの受信（input, sources, caller）
-- [x] SQL SELECT実行
-- [x] SQL INSERT実行
-- [x] SQL UPDATE実行
+- [x] SQL SELECT 実行
+- [x] SQL INSERT 実行
+- [x] SQL UPDATE 実行
 - [x] エラーハンドリング
 - [x] ログ出力（stderr）
-- [x] JSON出力（stdout）
+- [x] JSON 出力（stdout）
 
 ## トラブルシューティング
 
-### Dockerイメージが見つからない
+### Docker イメージが見つからない
 
 ```bash
 # イメージが存在することを確認
@@ -326,7 +385,7 @@ docker images | grep d6e-test-skill
 docker build -t d6e-test-skill:latest .
 ```
 
-### SQL実行エラー
+### SQL 実行エラー
 
 テーブルが存在しない場合は、まず作成してください：
 
