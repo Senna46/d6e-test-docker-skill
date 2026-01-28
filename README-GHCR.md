@@ -1,6 +1,6 @@
-# GitHub Container Registryでのテスト手順
+# GitHub Container Registry でのテスト手順
 
-このドキュメントでは、イメージをghcr.ioに公開し、D6Eで使用するまでの完全な手順を説明します。
+このドキュメントでは、イメージを ghcr.io に公開し、D6E で使用するまでの完全な手順を説明します。
 
 ## クイックスタート
 
@@ -24,23 +24,23 @@ docker login ghcr.io -u Senna46
 ./test-published.sh
 ```
 
-### 3. D6Eでの使用
+### 3. D6E での使用
 
 ```javascript
 // STFバージョンを作成（ghcr.ioのイメージを使用）
 d6e_create_stf_version({
-  "stf_id": "{stf_id}",
-  "version": "1.0.0",
-  "runtime": "docker",
-  "code": "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
-})
+  stf_id: "{stf_id}",
+  version: "1.0.0",
+  runtime: "docker",
+  code: '{"image":"ghcr.io/senna46/d6e-test-docker-skill:latest"}',
+});
 ```
 
 ## 詳細手順
 
 ### A. 初回セットアップ
 
-#### A-1. GitHub Personal Access Tokenの作成
+#### A-1. GitHub Personal Access Token の作成
 
 1. https://github.com/settings/tokens にアクセス
 2. "Generate new token" → "Generate new token (classic)"
@@ -52,7 +52,7 @@ d6e_create_stf_version({
 5. "Generate token"
 6. トークンをコピー（後で使用）
 
-#### A-2. Dockerにログイン
+#### A-2. Docker にログイン
 
 ```bash
 # 環境変数にトークンを設定
@@ -67,6 +67,7 @@ docker login ghcr.io -u Senna46
 ```
 
 ログイン成功メッセージ：
+
 ```
 Login Succeeded
 ```
@@ -109,7 +110,7 @@ docker push ghcr.io/senna46/d6e-test-docker-skill:v1.0.0
 
 ### D. イメージのテスト
 
-#### D-1. ローカルでのpull・実行テスト
+#### D-1. ローカルでの pull・実行テスト
 
 ```bash
 # 自動テストスクリプト
@@ -123,11 +124,12 @@ echo '{"workspace_id":"01234567-89ab-cdef-0123-456789abcdef","stf_id":"01234567-
 ```
 
 期待される出力：
+
 ```json
 {"output": {"status": "success", "message": "Docker STF test execution successful", ...}}
 ```
 
-#### D-2. D6Eでの統合テスト
+#### D-2. D6E での統合テスト
 
 ```bash
 # D6Eサーバーを起動
@@ -135,48 +137,48 @@ cd /home/user/github.com/KimuraYu45z/d6e
 docker compose -f compose.withdb.yml up -d
 ```
 
-MCPツールで実行：
+MCP ツールで実行：
 
 ```javascript
 // 1. STF作成
 d6e_create_stf({
-  "name": "test-ghcr-docker-skill",
-  "description": "Test Docker STF from GitHub Container Registry"
-})
+  name: "test-ghcr-docker-skill",
+  description: "Test Docker STF from GitHub Container Registry",
+});
 
 // 2. STFバージョン作成（ghcr.ioのイメージを指定）
 d6e_create_stf_version({
-  "stf_id": "{stf_id from step 1}",
-  "version": "1.0.0",
-  "runtime": "docker",
-  "code": "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
-})
+  stf_id: "{stf_id from step 1}",
+  version: "1.0.0",
+  runtime: "docker",
+  code: '{"image":"ghcr.io/senna46/d6e-test-docker-skill:latest"}',
+});
 
 // 3. ポリシーグループ・ポリシー作成（省略、QUICKSTART.md参照）
 
 // 4. ワークフロー作成
 d6e_create_workflow({
-  "name": "test-ghcr-workflow",
-  "stf_steps": [
+  name: "test-ghcr-workflow",
+  stf_steps: [
     {
-      "stf_id": "{stf_id}",
-      "version": "1.0.0"
-    }
-  ]
-})
+      stf_id: "{stf_id}",
+      version: "1.0.0",
+    },
+  ],
+});
 
 // 5. 実行
 d6e_execute_workflow({
-  "workflow_id": "{workflow_id}",
-  "input": {
-    "operation": "test"
-  }
-})
+  workflow_id: "{workflow_id}",
+  input: {
+    operation: "test",
+  },
+});
 ```
 
 ### E. プライベートイメージの場合
 
-プライベートイメージを使う場合、APIコンテナからもログインが必要：
+プライベートイメージを使う場合、API コンテナからもログインが必要：
 
 ```bash
 # APIコンテナ内でログイン
@@ -199,10 +201,10 @@ docker login ghcr.io -u Senna46
 
 ### "denied: permission_denied"
 
-- Personal Access Tokenに `write:packages` 権限があるか確認
+- Personal Access Token に `write:packages` 権限があるか確認
 - トークンの有効期限が切れていないか確認
 
-### イメージがpullできない（プライベートの場合）
+### イメージが pull できない（プライベートの場合）
 
 ```bash
 # APIコンテナ内でもログイン
@@ -221,16 +223,16 @@ docker build --no-cache -t d6e-test-skill:latest .
 
 ## まとめ
 
-✅ イメージをghcr.ioに公開
+✅ イメージを ghcr.io に公開
 ✅ パブリック/プライベート設定
-✅ ローカルでpull・実行テスト
-✅ D6Eでの統合テスト
+✅ ローカルで pull・実行テスト
+✅ D6E での統合テスト
 
-これで、公開されたDockerイメージをD6Eで使用できるようになりました！
+これで、公開された Docker イメージを D6E で使用できるようになりました！
 
 ## 次のステップ
 
-1. 独自のDockerスキルを作成
+1. 独自の Docker スキルを作成
 2. ghcr.io/your-org/your-skill として公開
-3. READMEをLLMに提供
-4. AIエージェントが自動的に使用
+3. README を LLM に提供
+4. AI エージェントが自動的に使用

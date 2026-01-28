@@ -1,10 +1,10 @@
 # テスト手順
 
-このドキュメントでは、実際にD6E Docker Runtimeをテストする手順を説明します。
+このドキュメントでは、実際に D6E Docker Runtime をテストする手順を説明します。
 
-## 1. ローカルでの基本テスト（D6Eサーバー不要）
+## 1. ローカルでの基本テスト（D6E サーバー不要）
 
-まずDockerイメージが正しく動作するか確認します。
+まず Docker イメージが正しく動作するか確認します。
 
 ```bash
 cd ~/github.com/Senna46/d6e-test-docker-skill
@@ -18,13 +18,14 @@ make test-local
 ```
 
 **期待される出力**:
+
 ```json
 {"output": {"status": "success", "message": "Docker STF test execution successful", ...}}
 ```
 
-## 2. D6Eサーバーでの統合テスト
+## 2. D6E サーバーでの統合テスト
 
-### 2.1 D6Eサーバーの起動
+### 2.1 D6E サーバーの起動
 
 ```bash
 cd /home/user/github.com/KimuraYu45z/d6e
@@ -32,6 +33,7 @@ docker compose -f compose.withdb.yml up -d
 ```
 
 サーバーが起動したら以下で確認：
+
 ```bash
 curl http://localhost:8080/health
 # 200 OK
@@ -39,15 +41,15 @@ curl http://localhost:8080/health
 
 ### 2.2 ワークスペースとユーザーの準備
 
-D6Eフロントエンド（http://localhost:3000）にアクセスして：
+D6E フロントエンド（http://localhost:3000）にアクセスして：
 
 1. ユーザー登録/ログイン
 2. ワークスペース作成
-3. ワークスペースIDをメモ
+3. ワークスペース ID をメモ
 
-### 2.3 MCPツールの準備
+### 2.3 MCP ツールの準備
 
-MCPツールが使える環境を準備（Cursor AIなど）
+MCP ツールが使える環境を準備（Cursor AI など）
 
 ### 2.4 テストテーブルの作成
 
@@ -63,7 +65,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-### 2.5 STFの作成
+### 2.5 STF の作成
 
 ```javascript
 // MCPツール: d6e_create_stf
@@ -73,9 +75,9 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-返ってきたSTF IDをメモ（例: `stf_id = "019abc..."`）
+返ってきた STF ID をメモ（例: `stf_id = "019abc..."`）
 
-### 2.6 STFバージョンの作成
+### 2.6 STF バージョンの作成
 
 ```javascript
 // MCPツール: d6e_create_stf_version
@@ -87,7 +89,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-**注意**: `code`フィールドはJSON文字列です。
+**注意**: `code`フィールドは JSON 文字列です。
 
 ### 2.7 ポリシーグループとポリシーの作成
 
@@ -150,11 +152,11 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-返ってきたworkflow_idをメモ
+返ってきた workflow_id をメモ
 
 ### 2.9 テスト実行
 
-#### テスト1: 基本的な入出力
+#### テスト 1: 基本的な入出力
 
 ```javascript
 // MCPツール: d6e_execute_workflow
@@ -167,6 +169,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 ```
 
 **期待結果**:
+
 ```json
 {
   "status": "success",
@@ -175,7 +178,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-#### テスト2: SQL SELECT
+#### テスト 2: SQL SELECT
 
 ```javascript
 // MCPツール: d6e_execute_workflow
@@ -189,6 +192,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 ```
 
 **期待結果**:
+
 ```json
 {
   "status": "success",
@@ -202,7 +206,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-#### テスト3: SQL INSERT
+#### テスト 3: SQL INSERT
 
 ```javascript
 // MCPツール: d6e_execute_workflow
@@ -220,6 +224,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 ```
 
 **期待結果**:
+
 ```json
 {
   "status": "success",
@@ -230,7 +235,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-#### テスト4: SQL UPDATE
+#### テスト 4: SQL UPDATE
 
 ```javascript
 // MCPツール: d6e_execute_workflow
@@ -248,6 +253,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 ```
 
 **期待結果**:
+
 ```json
 {
   "status": "success",
@@ -256,7 +262,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 }
 ```
 
-#### テスト5: エラーハンドリング
+#### テスト 5: エラーハンドリング
 
 ```javascript
 // MCPツール: d6e_execute_workflow
@@ -269,6 +275,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 ```
 
 **期待結果**: エラーが返される
+
 ```json
 {
   "status": "error",
@@ -278,7 +285,7 @@ MCPツールが使える環境を準備（Cursor AIなど）
 
 ## 3. ログの確認
 
-テスト実行中、APIサーバーのログを確認：
+テスト実行中、API サーバーのログを確認：
 
 ```bash
 # APIコンテナのログをリアルタイムで表示
@@ -304,7 +311,7 @@ docker exec d6e-api-1 docker images
 docker images | grep d6e-test-skill
 ```
 
-### SQL実行エラー
+### SQL 実行エラー
 
 ```bash
 # ポリシーを確認
@@ -319,18 +326,18 @@ docker images | grep d6e-test-skill
 # compose.withdb.yml
 api:
   environment:
-    STF_DOCKER_TIMEOUT_SECS: "600"  # 10分
+    STF_DOCKER_TIMEOUT_SECS: "600" # 10分
 ```
 
 ## 成功の確認
 
 すべてのテストが成功したら、以下が確認できたことになります：
 
-✅ Dockerイメージの起動
-✅ stdin/stdoutでのJSON通信
-✅ 内部API経由のSQL実行
+✅ Docker イメージの起動
+✅ stdin/stdout での JSON 通信
+✅ 内部 API 経由の SQL 実行
 ✅ ポリシーに基づくアクセス制御
 ✅ エラーハンドリング
 ✅ ログ出力
 
-おめでとうございます！Docker Runtime機能は正常に動作しています。
+おめでとうございます！Docker Runtime 機能は正常に動作しています。

@@ -1,6 +1,6 @@
-# AIエージェント用プロンプト（コピペ推奨）
+# AI エージェント用プロンプト（コピペ推奨）
 
-このファイルには、AIエージェントに直接コピー&ペーストできるプロンプトが含まれています。
+このファイルには、AI エージェントに直接コピー&ペーストできるプロンプトが含まれています。
 
 ---
 
@@ -41,7 +41,7 @@ README: https://github.com/Senna46/d6e-test-docker-skill
 
 ---
 
-## 🗃️ SQL操作プロンプト
+## 🗃️ SQL 操作プロンプト
 
 ```
 test_dataテーブルを作成し、Docker STFを使ってデータを取得してください。
@@ -58,7 +58,7 @@ Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
    )
 
 2. テストデータ挿入:
-   INSERT INTO test_data (name, value) 
+   INSERT INTO test_data (name, value)
    VALUES ('Test 1', 100), ('Test 2', 200), ('Test 3', 300)
 
 3. STF作成:
@@ -192,9 +192,10 @@ Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
 ## ⚠️ 重要な注意事項
 
 コピペする際の注意:
+
 - `runtime` は必ず `"docker"` を指定
-- `code` フィールドは JSON文字列として渡す: `"{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"`
-- SQL操作の前に必ずテーブルとポリシーを確認
+- `code` フィールドは JSON 文字列として渡す: `"{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"`
+- SQL 操作の前に必ずテーブルとポリシーを確認
 - エラーが発生したら、エラーメッセージを読んで対処
 - 初めて使う場合は `operation: "test"` で動作確認を推奨
 

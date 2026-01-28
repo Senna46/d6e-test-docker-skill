@@ -1,8 +1,8 @@
-# LLM向けプロンプト例
+# LLM 向けプロンプト例
 
-このドキュメントは、AIエージェント/LLMがこのDockerスキルを使用する際の参考プロンプトです。
+このドキュメントは、AI エージェント/LLM がこの Docker スキルを使用する際の参考プロンプトです。
 
-## プロンプト例1: 基本的な使用
+## プロンプト例 1: 基本的な使用
 
 ```
 このDockerスキルを使ってデータ処理を実行してください。
@@ -18,7 +18,7 @@ Docker Image: ghcr.io/senna46/d6e-test-docker-skill:latest
 まずSTFを作成し、ワークフローを実行してください。
 ```
 
-## プロンプト例2: データベース操作
+## プロンプト例 2: データベース操作
 
 ```
 test_dataテーブルからデータを取得してください。
@@ -34,7 +34,7 @@ test_dataテーブルからデータを取得してください。
 3. operation: "sql_select", table_name: "test_data" で実行
 ```
 
-## プロンプト例3: 新しいレコードの追加
+## プロンプト例 3: 新しいレコードの追加
 
 ```
 test_dataテーブルに新しいレコードを追加してください。
@@ -57,9 +57,9 @@ test_dataテーブルに新しいレコードを追加してください。
 3. operation: "sql_insert" で実行
 ```
 
-## LLMが理解すべき重要なポイント
+## LLM が理解すべき重要なポイント
 
-### 1. STF作成時の設定
+### 1. STF 作成時の設定
 
 ```javascript
 {
@@ -93,6 +93,7 @@ test_dataテーブルに新しいレコードを追加してください。
 ### 3. 出力形式
 
 成功時:
+
 ```json
 {
   "output": {
@@ -105,6 +106,7 @@ test_dataテーブルに新しいレコードを追加してください。
 ```
 
 エラー時:
+
 ```json
 {
   "output": {
@@ -114,7 +116,7 @@ test_dataテーブルに新しいレコードを追加してください。
 }
 ```
 
-### 4. SQL操作の前提条件
+### 4. SQL 操作の前提条件
 
 - **テーブルの存在**: `d6e_sql`でテーブルを作成
 - **ポリシーの設定**: `d6e_create_policy_group`, `d6e_create_policy`でアクセス許可
@@ -137,18 +139,21 @@ test_dataテーブルに新しいレコードを追加してください。
 
 ## エラーハンドリング
 
-LLMは以下のエラーに対処できる必要があります：
+LLM は以下のエラーに対処できる必要があります：
 
 1. **テーブルが存在しない**
+
    - エラーメッセージに"does not exist"が含まれる
    - 対処: `d6e_sql`でテーブルを作成
 
 2. **ポリシー拒否**
+
    - エラーメッセージに"Policy denied"が含まれる
    - 対処: ポリシーグループとポリシーを作成
 
-3. **DDL禁止**
-   - Docker STFからはCREATE/ALTER/DROPは実行不可
+3. **DDL 禁止**
+
+   - Docker STF からは CREATE/ALTER/DROP は実行不可
    - 対処: `d6e_sql`を直接使用
 
 4. **無効な操作**
@@ -159,72 +164,72 @@ LLMは以下のエラーに対処できる必要があります：
 1. **段階的な実行**: まず"test"操作で動作確認
 2. **明示的なエラーチェック**: 各ステップの結果を確認
 3. **適切なポリシー設定**: 最小限の権限で運用
-4. **ログの確認**: APIサーバーのログで詳細を確認
+4. **ログの確認**: API サーバーのログで詳細を確認
 
 ## 完全な実行例
 
 ```javascript
 // ステップ1: テーブル作成
 d6e_sql({
-  "sql": "CREATE TABLE test_data (id UUID PRIMARY KEY DEFAULT uuidv7(), name TEXT, value INTEGER, created_at TIMESTAMPTZ DEFAULT NOW())"
-})
+  sql: "CREATE TABLE test_data (id UUID PRIMARY KEY DEFAULT uuidv7(), name TEXT, value INTEGER, created_at TIMESTAMPTZ DEFAULT NOW())",
+});
 
 // ステップ2: テストデータ挿入
 d6e_sql({
-  "sql": "INSERT INTO test_data (name, value) VALUES ('Test 1', 100), ('Test 2', 200)"
-})
+  sql: "INSERT INTO test_data (name, value) VALUES ('Test 1', 100), ('Test 2', 200)",
+});
 
 // ステップ3: STF作成
 const stf = d6e_create_stf({
-  "name": "test-docker-skill",
-  "description": "Docker test skill"
-})
+  name: "test-docker-skill",
+  description: "Docker test skill",
+});
 
 // ステップ4: STFバージョン作成
 d6e_create_stf_version({
-  "stf_id": stf.id,
-  "version": "1.0.0",
-  "runtime": "docker",
-  "code": "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
-})
+  stf_id: stf.id,
+  version: "1.0.0",
+  runtime: "docker",
+  code: '{"image":"ghcr.io/senna46/d6e-test-docker-skill:latest"}',
+});
 
 // ステップ5: ポリシーグループ作成
 const policyGroup = d6e_create_policy_group({
-  "name": "docker-test-group"
-})
+  name: "docker-test-group",
+});
 
 // ステップ6: STFをポリシーグループに追加
 d6e_add_member_to_policy_group({
-  "policy_group_id": policyGroup.id,
-  "member_type": "stf",
-  "member_id": stf.id
-})
+  policy_group_id: policyGroup.id,
+  member_type: "stf",
+  member_id: stf.id,
+});
 
 // ステップ7: SELECTポリシー作成
 d6e_create_policy({
-  "policy_group_id": policyGroup.id,
-  "table_name": "test_data",
-  "operation": "select",
-  "mode": "allow"
-})
+  policy_group_id: policyGroup.id,
+  table_name: "test_data",
+  operation: "select",
+  mode: "allow",
+});
 
 // ステップ8: ワークフロー作成
 const workflow = d6e_create_workflow({
-  "name": "test-workflow",
-  "stf_steps": [{"stf_id": stf.id, "version": "1.0.0"}]
-})
+  name: "test-workflow",
+  stf_steps: [{ stf_id: stf.id, version: "1.0.0" }],
+});
 
 // ステップ9: 実行
 const result = d6e_execute_workflow({
-  "workflow_id": workflow.id,
-  "input": {
-    "operation": "sql_select",
-    "table_name": "test_data"
-  }
-})
+  workflow_id: workflow.id,
+  input: {
+    operation: "sql_select",
+    table_name: "test_data",
+  },
+});
 
 // 結果確認
-console.log(result) // {status: "success", rows: [...], count: 2}
+console.log(result); // {status: "success", rows: [...], count: 2}
 ```
 
-このプロンプトとガイドラインに従うことで、LLMは効果的にこのDockerスキルを使用できます。
+このプロンプトとガイドラインに従うことで、LLM は効果的にこの Docker スキルを使用できます。

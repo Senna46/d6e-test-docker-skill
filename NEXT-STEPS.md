@@ -1,14 +1,14 @@
-# 次のステップ: GitHub Container Registryへの公開
+# 次のステップ: GitHub Container Registry への公開
 
 ## 現在の状態
 
-✅ Dockerイメージのビルド完了
+✅ Docker イメージのビルド完了
 ✅ ローカルテスト成功
-⏳ GitHub Container Registryへの公開（これから実行）
+⏳ GitHub Container Registry への公開（これから実行）
 
 ## 手順
 
-### 1. GitHub Personal Access Tokenの作成
+### 1. GitHub Personal Access Token の作成
 
 1. ブラウザで https://github.com/settings/tokens を開く
 2. "Generate new token" をクリック
@@ -22,7 +22,7 @@
 5. "Generate token" をクリック
 6. **トークンをコピー**（このページを離れると二度と表示されません！）
 
-### 2. Dockerログイン
+### 2. Docker ログイン
 
 ```bash
 # 方法1: トークンを環境変数に設定（推奨）
@@ -35,6 +35,7 @@ docker login ghcr.io -u Senna46
 ```
 
 成功すると:
+
 ```
 Login Succeeded
 ```
@@ -47,10 +48,11 @@ cd ~/github.com/Senna46/d6e-test-docker-skill
 ```
 
 これにより以下が自動実行されます:
+
 1. イメージのビルド
 2. `ghcr.io/senna46/d6e-test-docker-skill:latest` としてタグ付け
 3. `ghcr.io/senna46/d6e-test-docker-skill:v1.0.0` としてタグ付け
-4. GitHub Container Registryへプッシュ
+4. GitHub Container Registry へプッシュ
 
 ### 4. イメージの公開設定（パブリックにする）
 
@@ -72,13 +74,14 @@ cd ~/github.com/Senna46/d6e-test-docker-skill
 ```
 
 これにより:
+
 1. ローカルイメージを削除
-2. ghcr.ioからpull
+2. ghcr.io から pull
 3. 各種テストを自動実行
 
-### 6. D6Eでの使用
+### 6. D6E での使用
 
-#### 6-1. D6Eサーバーを起動
+#### 6-1. D6E サーバーを起動
 
 ```bash
 cd /home/user/github.com/KimuraYu45z/d6e
@@ -88,113 +91,113 @@ docker compose -f compose.withdb.yml up -d
 curl http://localhost:8080/health
 ```
 
-#### 6-2. STFとワークフローを作成
+#### 6-2. STF とワークフローを作成
 
-MCPツール（Cursor AIなど）で実行:
+MCP ツール（Cursor AI など）で実行:
 
 ```javascript
 // 1. STF作成
 d6e_create_stf({
-  "name": "test-ghcr-docker-skill",
-  "description": "Test Docker STF from GitHub Container Registry"
-})
+  name: "test-ghcr-docker-skill",
+  description: "Test Docker STF from GitHub Container Registry",
+});
 // → stf_id をメモ
 
 // 2. STFバージョン作成（ghcr.ioイメージを指定）
 d6e_create_stf_version({
-  "stf_id": "{上記のstf_id}",
-  "version": "1.0.0",
-  "runtime": "docker",
-  "code": "{\"image\":\"ghcr.io/senna46/d6e-test-docker-skill:latest\"}"
-})
+  stf_id: "{上記のstf_id}",
+  version: "1.0.0",
+  runtime: "docker",
+  code: '{"image":"ghcr.io/senna46/d6e-test-docker-skill:latest"}',
+});
 
 // 3. テストテーブルとデータを作成
 d6e_sql({
-  "sql": "CREATE TABLE test_data (id UUID PRIMARY KEY DEFAULT uuidv7(), name TEXT NOT NULL, value INTEGER, created_at TIMESTAMPTZ DEFAULT NOW())"
-})
+  sql: "CREATE TABLE test_data (id UUID PRIMARY KEY DEFAULT uuidv7(), name TEXT NOT NULL, value INTEGER, created_at TIMESTAMPTZ DEFAULT NOW())",
+});
 
 d6e_sql({
-  "sql": "INSERT INTO test_data (name, value) VALUES ('Test 1', 100), ('Test 2', 200), ('Test 3', 300)"
-})
+  sql: "INSERT INTO test_data (name, value) VALUES ('Test 1', 100), ('Test 2', 200), ('Test 3', 300)",
+});
 
 // 4. ポリシーグループ作成
 d6e_create_policy_group({
-  "name": "docker-test-group"
-})
+  name: "docker-test-group",
+});
 // → policy_group_id をメモ
 
 // 5. STFをポリシーグループに追加
 d6e_add_member_to_policy_group({
-  "policy_group_id": "{policy_group_id}",
-  "member_type": "stf",
-  "member_id": "{stf_id}"
-})
+  policy_group_id: "{policy_group_id}",
+  member_type: "stf",
+  member_id: "{stf_id}",
+});
 
 // 6. ポリシー作成（select, insert, update）
 d6e_create_policy({
-  "policy_group_id": "{policy_group_id}",
-  "table_name": "test_data",
-  "operation": "select",
-  "mode": "allow"
-})
+  policy_group_id: "{policy_group_id}",
+  table_name: "test_data",
+  operation: "select",
+  mode: "allow",
+});
 
 d6e_create_policy({
-  "policy_group_id": "{policy_group_id}",
-  "table_name": "test_data",
-  "operation": "insert",
-  "mode": "allow"
-})
+  policy_group_id: "{policy_group_id}",
+  table_name: "test_data",
+  operation: "insert",
+  mode: "allow",
+});
 
 d6e_create_policy({
-  "policy_group_id": "{policy_group_id}",
-  "table_name": "test_data",
-  "operation": "update",
-  "mode": "allow"
-})
+  policy_group_id: "{policy_group_id}",
+  table_name: "test_data",
+  operation: "update",
+  mode: "allow",
+});
 
 // 7. ワークフロー作成
 d6e_create_workflow({
-  "name": "test-ghcr-workflow",
-  "input_steps": [],
-  "stf_steps": [
+  name: "test-ghcr-workflow",
+  input_steps: [],
+  stf_steps: [
     {
-      "stf_id": "{stf_id}",
-      "version": "1.0.0"
-    }
+      stf_id: "{stf_id}",
+      version: "1.0.0",
+    },
   ],
-  "effect_steps": []
-})
+  effect_steps: [],
+});
 // → workflow_id をメモ
 
 // 8. 実行テスト
 d6e_execute_workflow({
-  "workflow_id": "{workflow_id}",
-  "input": {
-    "operation": "test"
-  }
-})
+  workflow_id: "{workflow_id}",
+  input: {
+    operation: "test",
+  },
+});
 
 // 9. SQL SELECTテスト
 d6e_execute_workflow({
-  "workflow_id": "{workflow_id}",
-  "input": {
-    "operation": "sql_select",
-    "table_name": "test_data"
-  }
-})
+  workflow_id: "{workflow_id}",
+  input: {
+    operation: "sql_select",
+    table_name: "test_data",
+  },
+});
 
 // 10. SQL INSERTテスト
 d6e_execute_workflow({
-  "workflow_id": "{workflow_id}",
-  "input": {
-    "operation": "sql_insert",
-    "table_name": "test_data",
-    "data": {
-      "name": "New Test",
-      "value": 999
-    }
-  }
-})
+  workflow_id: "{workflow_id}",
+  input: {
+    operation: "sql_insert",
+    table_name: "test_data",
+    data: {
+      name: "New Test",
+      value: 999,
+    },
+  },
+});
 ```
 
 ## トラブルシューティング
@@ -209,11 +212,11 @@ docker login ghcr.io -u Senna46
 
 ### プッシュ失敗: "unauthorized"
 
-- Personal Access Tokenが正しいか確認
+- Personal Access Token が正しいか確認
 - トークンに `write:packages` 権限があるか確認
 - トークンの有効期限が切れていないか確認
 
-### D6Eでイメージがpullできない（プライベートの場合）
+### D6E でイメージが pull できない（プライベートの場合）
 
 ```bash
 # APIコンテナ内でもログイン
@@ -222,22 +225,22 @@ docker exec -it d6e-api-1 docker login ghcr.io -u Senna46
 
 ## 完了チェックリスト
 
-- [ ] GitHub Personal Access Token作成
-- [ ] Docker loginに成功
+- [ ] GitHub Personal Access Token 作成
+- [ ] Docker login に成功
 - [ ] `./publish.sh` でイメージ公開
-- [ ] イメージをPublicに設定
+- [ ] イメージを Public に設定
 - [ ] `./test-published.sh` でテスト成功
-- [ ] D6Eサーバー起動
-- [ ] STFとワークフロー作成
-- [ ] D6Eでの実行テスト成功
+- [ ] D6E サーバー起動
+- [ ] STF とワークフロー作成
+- [ ] D6E での実行テスト成功
 
-すべてチェックがついたら、Docker Runtime機能が完全に動作していることが確認できます！🎉
+すべてチェックがついたら、Docker Runtime 機能が完全に動作していることが確認できます！🎉
 
 ## 次の展開
 
-1. **独自のスキルを作成**: Python/Node.js/Goで独自のビジネスロジックを実装
-2. **ghcr.ioに公開**: `ghcr.io/your-org/your-skill` として公開
-3. **READMEを作成**: AIエージェントが理解できるドキュメント
+1. **独自のスキルを作成**: Python/Node.js/Go で独自のビジネスロジックを実装
+2. **ghcr.io に公開**: `ghcr.io/your-org/your-skill` として公開
+3. **README を作成**: AI エージェントが理解できるドキュメント
 4. **本番環境へ**: 実際のワークフローで使用
 
 Happy Coding! 🚀
